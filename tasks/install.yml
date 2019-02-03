@@ -1,0 +1,30 @@
+---
+
+- name: Get latest version number
+  block:
+    - name: Get latest github info
+      uri:
+        url: https://api.github.com/repos/trapexit/mergerfs/releases/latest
+        method: GET
+        return_content: yes
+      register: mergerfs_github_info
+      check_mode: no
+    - name: Set/modify fact mergerfs_version
+      set_fact:
+        mergerfs_version: "{{ (mergerfs_github_info.content|from_json).tag_name }}"
+      check_mode: no
+  when: mergerfs_version == 'latest'
+
+- name: "Check if mergerfs is installed"
+  command: "dpkg-query -W mergerfs"
+  register: mergerfs_which
+  changed_when: false
+  failed_when: false
+
+- name: Install a .deb package
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+    deb: "https://github.com/trapexit/mergerfs/releases/download/{{ mergerfs_version }}/{{ mergerfs_file }}.{{ mergerfs_packagetype }}"
+    only_upgrade: True
+  when: 'mergerfs_which.rc != 0 or (mergerfs_which.stdout is defined and mergerfs_which.stdout.find(mergerfs_version ~ "~") == -1)'
