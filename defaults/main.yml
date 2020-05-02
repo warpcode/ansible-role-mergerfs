@@ -1,6 +1,6 @@
 ---
 # mergerfs version can be defined as a release number (2.25.1) or "latest"
-mergerfs_version: "2.25.1"
+mergerfs_version: "2.29.0"
 mergerfs_arch: amd64
 mergerfs_system: "{{ ansible_distribution | lower }}-{{ ansible_distribution_release | lower }}"
 mergerfs_file: "mergerfs_{{ mergerfs_version }}.{{ mergerfs_system }}_{{ mergerfs_arch }}"
